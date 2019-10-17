@@ -9,7 +9,7 @@
 #include <cv_bridge/cv_bridge.h>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <pcl/point_types.h>
-#include <pcl/filters/voxel_grid.h>
+
 
 // Register as nodelet
 PLUGINLIB_EXPORT_CLASS(pses_kinect_utilities::VoxelGridFilterNodelet,
@@ -66,19 +66,9 @@ void VoxelGridFilterNodelet::connectCb()
 }
 
 void VoxelGridFilterNodelet::pointCloudCb(const PointCloud::ConstPtr& cloud_msg)
-{
-  pcl::VoxelGrid<PointXYZ> vox;
-  vox.setInputCloud(cloud_msg);
-  // The leaf size is more or less the size of voxels. Note that these values
-  // affect what a good threshold value would be.
-  vox.setLeafSize(config_.leaf_size, config_.leaf_size, config_.leaf_size);
-  // This limits the overall volume of points. Being "far away" points
-  // considered as irrelevant.
-  //vox.setFilterLimits(config_.min_filter_limit, config_.max_filter_limit);
-  // The line below is perhaps the most important as it reduces ghost points.
-  vox.setMinimumPointsNumberPerVoxel(config_.min_points_per_voxel);
-  vox.filter(*filtered_cloud_);
-  //filtered_cloud_->header.frame_id = tf_frame_;
+{  
+  vox_.setInputCloud(cloud_msg);
+  vox_.filter(*filtered_cloud_);
   filtered_cloud_->header = cloud_msg->header;
   pub_cloud_.publish(filtered_cloud_);
 }
@@ -87,6 +77,10 @@ void VoxelGridFilterNodelet::dynReconfCb(
     VoxelGridFilterConfig& inputConfig, uint32_t level)
 {
   config_ = inputConfig;
+  
+  vox_.setLeafSize(config_.leaf_size, config_.leaf_size, config_.leaf_size);
+  vox_.setMinimumPointsNumberPerVoxel(config_.min_points_per_voxel);
+  
   NODELET_INFO("Reconfigured voxel grid filter params");
 }
 

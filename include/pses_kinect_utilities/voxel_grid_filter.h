@@ -15,6 +15,8 @@
 #include <pses_kinect_utilities/VoxelGridFilterConfig.h>
 #include <dynamic_reconfigure/server.h>
 
+#include <pcl/filters/voxel_grid.h>
+
 /**
  * @typedef pcl::PointCloud<pcl::PointXYZ> PointCloud
  * @brief Shortcut for a XYZ Point cloud of the pcl library.
@@ -56,6 +58,8 @@ private:
   // Publications
   boost::mutex connect_mutex_;
   ros::Publisher pub_cloud_; /**< Publisher of the filtered point cloud. */
+  
+  pcl::VoxelGrid<pcl::PointXYZ> vox_;
 
   /**
    * @brief This function is called by the initialization of the nodelet and
