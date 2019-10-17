@@ -37,7 +37,7 @@ void VoxelGridFilterNodelet::onInit()
 
   // Read parameters
   private_nh.param("queue_size", queue_size_, 1);
-  private_nh.param<std::string>("tf_frame", tf_frame_, "kinect2_link");
+  //private_nh.param<std::string>("tf_frame", tf_frame_, "kinect2_link");
 
   // Monitor whether anyone is subscribed to the output
   ros::SubscriberStatusCallback connect_cb =
@@ -74,11 +74,12 @@ void VoxelGridFilterNodelet::pointCloudCb(const PointCloud::ConstPtr& cloud_msg)
   vox.setLeafSize(config_.leaf_size, config_.leaf_size, config_.leaf_size);
   // This limits the overall volume of points. Being "far away" points
   // considered as irrelevant.
-  vox.setFilterLimits(config_.min_filter_limit, config_.max_filter_limit);
+  //vox.setFilterLimits(config_.min_filter_limit, config_.max_filter_limit);
   // The line below is perhaps the most important as it reduces ghost points.
   vox.setMinimumPointsNumberPerVoxel(config_.min_points_per_voxel);
   vox.filter(*filtered_cloud_);
-  filtered_cloud_->header.frame_id = tf_frame_;
+  //filtered_cloud_->header.frame_id = tf_frame_;
+  filtered_cloud_->header = cloud_msg->header;
   pub_cloud_.publish(filtered_cloud_);
 }
 
